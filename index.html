@@ -168,6 +168,16 @@
             margin-top: 0;
         }
 
+        .cover-image-wrapper img.shrink-90 {
+            height: 144%;
+            margin-top: 0;
+        }
+
+        .cover-image-wrapper img.shrink-more {
+            height: 115%;
+            margin-top: 0;
+        }
+
         .cover-image-wrapper img.shift-left {
             margin-right: 5px;
         }
@@ -405,7 +415,9 @@
     const shiftDownFolders = ['右一门', '右拐角门', '左拐角门', '左一门', '左双T门', '上双T门'];
     const shiftUpFolders = ['下拐角门'];
     const shiftLeftFolders = [];
-    const shrinkUpFolders = ['右拐角门', '左拐角门', '上1门', '左一门', '上双T门', '左双T门', '横Y门', 'T形门'];
+    const shrinkUpFolders = ['右拐角门', '左拐角门', '上1门', '左一门', '上双T门', '左双T门', 'T形门'];
+    const shrink90Folders = ['下拐角门', '右一门', '倒Z门'];
+    const shrinkMoreFolders = ['横Y门'];
 
     function buildCoverPage() {
         const grid = document.getElementById('coverGrid');
@@ -422,10 +434,12 @@
             const isShiftUp = shiftUpFolders.includes(folder.name);
             const isShiftLeft = shiftLeftFolders.includes(folder.name);
             const isShrinkUp = shrinkUpFolders.includes(folder.name);
+            const isShrink90 = shrink90Folders.includes(folder.name);
+            const isShrinkMore = shrinkMoreFolders.includes(folder.name);
 
             card.innerHTML = `
                 <div class="cover-image-wrapper">
-                    <img src="${imgPath}" alt="${folder.name}" class="${isShrinkUp ? 'shrink-up' : isShiftDown ? 'shift-down' : isShiftUp ? 'shift-up' : isShiftLeft ? 'shift-left' : ''}" onerror="this.style.display='none'">
+                    <img src="${imgPath}" alt="${folder.name}" class="${isShrink90 ? 'shrink-90' : isShrinkMore ? 'shrink-more' : isShrinkUp ? 'shrink-up' : isShiftDown ? 'shift-down' : isShiftUp ? 'shift-up' : isShiftLeft ? 'shift-left' : ''}" onerror="this.style.display='none'">
                 </div>
                 <div class="cover-name">${folder.name}${folder.maps.length > 1 ? `<span style="font-size:0.75rem;color:var(--text-secondary);margin-left:4px">(${folder.maps.length}个)</span>` : ''}</div>
             `;
