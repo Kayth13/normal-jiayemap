@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图小抄</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #242424;
+            --bg-card: #2a2a2a;
+            --text-primary: #e8e4dc;
+            --text-secondary: #9a9590;
+            --accent: #d4a574;
+            --accent-dark: #b8956a;
+            --border: #3a3a3a;
+            --shadow: rgba(0,0,0,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            letter-spacing: 0.15em;
+        }
+
+        .header-credits {
+            position: absolute;
+            top: 65px;
+            right: 20px;
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .back-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .cover-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 60px 0 10px;
+        }
+
+        .cover-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .cover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .cover-card:active {
+            transform: translateY(-2px);
+        }
+
+        .cover-image-wrapper {
+            width: 100%;
+            height: 120px;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-secondary);
+        }
+
+        .cover-image-wrapper img {
+            width: 100%;
+            height: 160%;
+            object-fit: cover;
+            object-position: center;
+            margin-top: -30%;
+            transition: transform 0.3s ease;
+        }
+
+        .cover-card:hover .cover-image-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .cover-image-wrapper img.shift-down {
+            margin-top: calc(-30% + 20px);
+        }
+
+        .cover-image-wrapper img.shift-up {
+            margin-top: calc(-30% - 5px);
+        }
+
+        .cover-image-wrapper img.shift-left {
+            margin-right: 5px;
+        }
+
+        .cover-name {
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 0 40px;
+        }
+
+        .map-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 12px var(--shadow);
+        }
+
+        .map-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .map-card:active {
+            transform: translateY(-3px);
+        }
+
+        .map-image-wrapper {
+            width: 100%;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .map-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .map-image-wrapper.img-full img {
+            object-fit: contain;
+        }
+
+        .map-card:hover .map-image-wrapper img {
+            transform: scale(1.03);
+        }
+
+        .map-label {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+
+        .map-label span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .map-label .expand-icon {
+            color: var(--accent);
+        }
+
+        .detail-header {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+
+        .detail-header h2 {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            letter-spacing: 0.1em;
+        }
+
+        .detail-header .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: viewerIn 0.25s ease;
+        }
+
+        .viewer.active {
+            display: flex;
+        }
+
+        @keyframes viewerIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .viewer img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .viewer .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .viewer .close-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .viewer .viewer-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .texture-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 1000;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="texture-overlay"></div>
+
+<div id="coverPage" class="page active">
+    <div class="header">
+        <h1>厄运之女（普通）</h1>
+        <div class="header-credits">
+            <div>地图：@展十（超自然行动组）</div>
+            <div>封面：小红书@風.</div>
+            <div>封面优化+网页：@灵星连</div>
+        </div>
+    </div>
+    <div class="cover-grid" id="coverGrid"></div>
+</div>
+
+<div id="detailPage" class="page">
+    <button class="back-btn" onclick="goHome()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </button>
+    <div class="detail-header">
+        <h2 id="detailTitle"></h2>
+        <div class="subtitle" id="detailSubtitle"></div>
+    </div>
+    <div class="map-grid" id="mapGrid"></div>
+</div>
+
+<div id="viewer" class="viewer">
+    <button class="back-btn viewer-back" onclick="closeViewer()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </button>
+    <button class="close-btn" onclick="closeViewer()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+    </button>
+    <img id="viewerImage" src="" alt="地图">
+</div>
+
+<script>
+    const folders = [
+        { name: '右拐角门', maps: ['地图.JPG'] },
+        { name: '左拐角门', maps: ['地图.JPG'] },
+        { name: '下拐角门', maps: ['地图 (1).JPG', '地图 (2).JPG'], labels: ['下拐角一', '下拐角二'] },
+        { name: '上1门', maps: ['地图.jpg'] },
+        { name: '右一门', maps: ['地图.JPG'] },
+        { name: '左一门', maps: ['地图 (1).JPG', '地图 (2).jpg'], labels: ['左一', '左二'] },
+        { name: '上双T门', maps: ['地图.jpg'] },
+        { name: '左双T门', maps: ['地图.JPG'] },
+        { name: '倒Z门', maps: ['地图.JPG'] },
+        { name: '横Y门', maps: ['地图.JPG'] },
+        { name: '十字门', maps: ['地图.jpg'] },
+        { name: 'T形门', maps: ['地图.jpg'] }
+    ];
+
+    const shiftDownFolders = ['上1门', '横Y门', 'T形门', '右一门', '右拐角门', '左拐角门', '左一门', '左双T门', '上双T门'];
+    const shiftUpFolders = ['下拐角门'];
+    const shiftLeftFolders = [];
+
+    function buildCoverPage() {
+        const grid = document.getElementById('coverGrid');
+        grid.innerHTML = '';
+
+        folders.forEach((folder, index) => {
+            const card = document.createElement('div');
+            card.className = 'cover-card';
+            card.style.animationDelay = `${index * 50}ms`;
+            card.onclick = () => openFolder(folder);
+
+            const imgPath = `image/${folder.name}/封面.jpg`;
+            const isShiftDown = shiftDownFolders.includes(folder.name);
+            const isShiftUp = shiftUpFolders.includes(folder.name);
+            const isShiftLeft = shiftLeftFolders.includes(folder.name);
+
+            card.innerHTML = `
+                <div class="cover-image-wrapper">
+                    <img src="${imgPath}" alt="${folder.name}" class="${isShiftDown ? 'shift-down' : isShiftUp ? 'shift-up' : isShiftLeft ? 'shift-left' : ''}" onerror="this.style.display='none'">
+                </div>
+                <div class="cover-name">${folder.name}${folder.maps.length > 1 ? `<span style="font-size:0.75rem;color:var(--text-secondary);margin-left:4px">(${folder.maps.length}个)</span>` : ''}</div>
+            `;
+
+            grid.appendChild(card);
+        });
+    }
+
+    function openFolder(folder) {
+        document.getElementById('detailTitle').textContent = folder.name;
+        const count = folder.maps.length;
+        document.getElementById('detailSubtitle').textContent = count === 1 ? '共 1 张地图' : `共 ${count} 张地图`;
+
+        if (count === 1) {
+            openViewer(folder.name, folder.maps[0], null, null);
+            return;
+        }
+
+        const grid = document.getElementById('mapGrid');
+        grid.innerHTML = '';
+
+        folder.maps.forEach((map, index) => {
+            const card = document.createElement('div');
+            card.className = 'map-card';
+            card.style.animationDelay = `${index * 80}ms`;
+            card.onclick = () => openViewer(folder.name, map, folder.maps, index);
+
+            const mapPath = `image/${folder.name}/${map}`;
+
+            card.innerHTML = `
+                <div class="map-image-wrapper img-full">
+                    <img src="${mapPath}" alt="地图 ${index + 1}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 60%22%3E%3Crect fill=%22%232a2a2a%22 width=%22100%22 height=%2260%22/%3E%3Ctext x=%2250%22 y=%2235%22 text-anchor=%22middle%22 fill=%22%239a9590%22 font-size=%2212%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+                </div>
+                <div class="map-label">
+                    <span>${folder.labels && folder.labels[index] ? folder.labels[index] : '地图 ' + (index + 1)}</span>
+                    <span class="expand-icon">⊕</span>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+
+        showPage('detailPage');
+    }
+
+    function openViewer(folderName, mapName, allMaps, currentIndex) {
+        const mapPath = `image/${folderName}/${mapName}`;
+        document.getElementById('viewerImage').src = mapPath;
+        document.getElementById('viewer').classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        const viewerBack = document.querySelector('.viewer-back');
+        if (!allMaps) {
+            viewerBack.onclick = () => {
+                closeViewer();
+                showPage('coverPage');
+            };
+        } else {
+            viewerBack.onclick = closeViewer;
+        }
+    }
+
+    function closeViewer() {
+        document.getElementById('viewer').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function goHome() {
+        showPage('coverPage');
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (document.getElementById('viewer').classList.contains('active')) {
+                closeViewer();
+            } else if (document.getElementById('detailPage').classList.contains('active')) {
+                goHome();
+            }
+        }
+    });
+
+    document.getElementById('viewer').addEventListener('click', (e) => {
+        if (e.target.id === 'viewer') {
+            closeViewer();
+        }
+    });
+
+    buildCoverPage();
+</script>
+
+</body>
+</html>
