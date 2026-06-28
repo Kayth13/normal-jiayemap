@@ -163,6 +163,11 @@
             margin-top: calc(-30% - 5px);
         }
 
+        .cover-image-wrapper img.shrink-up {
+            transform: scale(0.95);
+            margin-top: calc(-30% + 15px);
+        }
+
         .cover-image-wrapper img.shift-left {
             margin-right: 5px;
         }
@@ -397,9 +402,10 @@
         { name: 'T形门', maps: ['地图.jpg'] }
     ];
 
-    const shiftDownFolders = ['上1门', '横Y门', 'T形门', '右一门', '右拐角门', '左拐角门', '左一门', '左双T门', '上双T门'];
+    const shiftDownFolders = ['右一门', '右拐角门', '左拐角门', '左一门', '左双T门', '上双T门'];
     const shiftUpFolders = ['下拐角门'];
     const shiftLeftFolders = [];
+    const shrinkUpFolders = ['右拐角门', '左拐角门', '上1门', '左一门', '上双T门', '左双T门', '横Y门', 'T形门'];
 
     function buildCoverPage() {
         const grid = document.getElementById('coverGrid');
@@ -415,10 +421,11 @@
             const isShiftDown = shiftDownFolders.includes(folder.name);
             const isShiftUp = shiftUpFolders.includes(folder.name);
             const isShiftLeft = shiftLeftFolders.includes(folder.name);
+            const isShrinkUp = shrinkUpFolders.includes(folder.name);
 
             card.innerHTML = `
                 <div class="cover-image-wrapper">
-                    <img src="${imgPath}" alt="${folder.name}" class="${isShiftDown ? 'shift-down' : isShiftUp ? 'shift-up' : isShiftLeft ? 'shift-left' : ''}" onerror="this.style.display='none'">
+                    <img src="${imgPath}" alt="${folder.name}" class="${isShrinkUp ? 'shrink-up' : isShiftDown ? 'shift-down' : isShiftUp ? 'shift-up' : isShiftLeft ? 'shift-left' : ''}" onerror="this.style.display='none'">
                 </div>
                 <div class="cover-name">${folder.name}${folder.maps.length > 1 ? `<span style="font-size:0.75rem;color:var(--text-secondary);margin-left:4px">(${folder.maps.length}个)</span>` : ''}</div>
             `;
